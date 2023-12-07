@@ -2,8 +2,14 @@ import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { FormEventHandler, useEffect, useState } from "react";
-import axios from "axios";
+import {
+  FormEventHandler,
+  KeyboardEventHandler,
+  useEffect,
+  useState,
+} from "react";
+import getLocations from "../../services/searchLocation";
+import { useDebouncer } from "../global/useDebouncer";
 
 interface FormValues {
   data: [
@@ -21,11 +27,11 @@ interface SearchLocations {
 }
 
 const initialSearchLocations = {
-    city_label: '',
-    state_code: '',
-    city: ''
-  }
-  
+  city_label: "",
+  state_code: "",
+  city: "",
+};
+
 const initialValues = {
   city: "",
 };
@@ -34,42 +40,22 @@ const userSchema = yup.object().shape({
   state: yup.string().required("required"),
 });
 const SearchForm = () => {
+  const [query, setQuery] = useState("");
+//   const [listing, setListing] = useState("");
   const [city, setCity] = useState<SearchLocations[]>([initialSearchLocations]);
-  let [value, setValue] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+//   const controllerRef = useRef();
+console.log('what is the query', query)
+// if(query) {
+    const searchQuery = useDebouncer({value: query, time:2000});
+// }
 
-  const fetchData = async (input: string) => {
-    const options = {
-      method: "GET",
-      url: "https://us-real-estate.p.rapidapi.com/location/suggest",
-      params: { input: input },
-      headers: {
-        "X-RapidAPI-Key": "057d65a92bmsh48288fc53ec9bd8p11f49cjsnb1b5c7c8f681",
-        "X-RapidAPI-Host": "us-real-estate.p.rapidapi.com",
-      },
-    };
-
-    try {
-      const response = await axios.request(options).then((response) => {
-        console.log("the response", response, response.data);
-        const { data } = response.data as FormValues;
-
-        const cityData: SearchLocations[] = data.map(
-          (cityData: { city: string; state_code: string }) =>({
-            city_label:`${cityData.city}, ${cityData.state_code}`,
-            city: cityData.city,
-            state_code: cityData.state_code
-
-        }));
-        console.log("what do we get for city data", cityData);
-        return cityData;
-      });
-      console.log("waht is city", response);
-
-      setCity(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const searchCharacter = async() => {
+    setCity([initialSearchLocations])
+    setLoading(true);
+    const data = await getLocations(searchQuery).then((response) => response ? setCity(response) : setCity([initialSearchLocations]));
+    setLoading(false)
+}
 
   const isNonMobile = useMediaQuery("(min-width:600px");
 
@@ -77,17 +63,10 @@ const SearchForm = () => {
     console.log("values", values);
   };
 
-  const handleCitySearch = (values: any) => {
-    value = values.target.value;
-    fetchData(value);
-    console.log("values", values.target, value);
-  };
-
-  const submitCitySearch = (values: any) => {
-    value = values.target.value;
-    console.log("values", values.target, value);
-    setValue(value);
-  };
+  useEffect(() => {
+    if(searchQuery || query.trim().length < 0) searchCharacter();
+    
+  }, [searchQuery])
 
   return (
     <Box m="20px">
@@ -122,22 +101,21 @@ const SearchForm = () => {
                 error={!!touched.state && !!errors.state}
                 sx={{ gridColumn: "span 2" }}
               />
-              <Autocomplete
+                <Autocomplete
                 fullWidth
+    
                 disablePortal
                 id="combo-box-demo"
                 getOptionLabel={(option) => option.city_label}
-                onChange={submitCitySearch}
                 options={city}
                 renderOption={(props, option) => (
-                    <Box component="li" {...props}>
-                      {option.city_label} 
-                    </Box>
-                  )}
-                onKeyUp={handleCitySearch}
+                  <Box component="li" {...props}>
+                    {option.city_label}
+                  </Box>
+                )}
                 sx={{ width: 300 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Enter City" />
+                  <TextField {...params} label="Enter City"  onChange={(event) => setQuery(event.target.value)} value={query} />
                 )}
               />
             </Box>
