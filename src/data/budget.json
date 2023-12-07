@@ -1,0 +1,102 @@
+[
+    {
+        "month": "November",
+        "year": 2022,
+        "bills": [
+            {
+                "name": "Light",
+                "value": 50
+            }
+        ],
+        "loans": [
+            {
+                "name": "School Loan",
+                "value": 50,
+                "total": 500000
+            }
+        ],
+        "expense": [
+            {
+                "name": "Dinner",
+                "category": "Entertainment",
+                "value": 100
+            }
+        ],
+        "income": 5000
+    },
+    {
+        "month": "December",
+        "year": 2022,
+        "bills": [
+            {
+                "name": "Light",
+                "value": 50
+            }
+        ],
+        "loans": [
+            {
+                "name": "School Loan",
+                "value": 50,
+                "total": 500000
+            }
+        ],
+        "expense": [
+            {
+                "name": "Dinner",
+                "category": "Entertainment",
+                "value": 100
+            }
+        ],
+        "income": 5000
+    },
+    {
+        "month": "January",
+        "year": 2023,
+        "bills": [
+            {
+                "name": "Light",
+                "value": 50
+            }
+        ],
+        "loans": [
+            {
+                "name": "School Loan",
+                "value": 50,
+                "total": 500000
+            }
+        ],
+        "expense": [
+            {
+                "name": "Dinner",
+                "category": "Entertainment",
+                "value": 100
+            }
+        ],
+        "income": 5000
+    },
+    {
+        "month": "Feb",
+        "year": 2023,
+        "bills": [
+            {
+                "name": "Light",
+                "value": 50
+            }
+        ],
+        "loans": [
+            {
+                "name": "School Loan",
+                "value": 50,
+                "total": 500000
+            }
+        ],
+        "expense": [
+            {
+                "name": "Dinner",
+                "category": "Entertainment",
+                "value": 100
+            }
+        ],
+        "income": 5000
+    }
+]
