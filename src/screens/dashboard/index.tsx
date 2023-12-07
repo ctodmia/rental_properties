@@ -3,6 +3,7 @@ import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import Circles from "../../components/Circles";
 import Header from "../../components/Header";
+import SearchForm from "../search_form";
 
 
 const width = 960;
@@ -63,6 +64,7 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height={height} >
+          <SearchForm/>
             <Circles key={1} height={height} width={width} />
           </Box>
         </CustomBox>
