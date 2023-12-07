@@ -95,7 +95,7 @@ const Sidebar = (props: {isSidebar: boolean}) => {
                   Welcome, Carine
                 </Typography>
                 <Typography variant="h2" color={colors.greenAccent[500]}>
-                  Wealth Manager
+                  Renter Search
                 </Typography>
               </Box>
             </Box>

@@ -50,7 +50,7 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Revenue Generated
+                Rental Properties
               </Typography>
     
             </Box>
