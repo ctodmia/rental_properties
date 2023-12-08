@@ -1,7 +1,7 @@
-import { Box, IconButton, Typography, styled, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, styled, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import Circles from "../../components/Circles";
+// import Circles from "../../components/Circles";
 import Header from "../../components/Header";
 import SearchForm from "../search_form";
 
@@ -63,9 +63,8 @@ const Dashboard = () => {
               </IconButton>
             </Box>
           </Box>
-          <Box height={height} >
-          <SearchForm/>
-            <Circles key={1} height={height} width={width} />
+          <Box height={height} display="flex" justifyContent="end" mt="20px">
+            <SearchForm/>
           </Box>
         </CustomBox>
       </Box>

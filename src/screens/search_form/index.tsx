@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
-import { Formik } from "formik";
+import { Form, Formik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {
@@ -9,7 +9,9 @@ import {
   useState,
 } from "react";
 import getLocations from "../../services/searchLocation";
+import getRentalPrices from "../../services/getRentalPrices";
 import { useDebouncer } from "../global/useDebouncer";
+import RentalProperty from "../../components/RentalProperty";
 
 interface FormValues {
   data: [
@@ -37,43 +39,57 @@ const initialValues = {
 };
 
 const userSchema = yup.object().shape({
-  state: yup.string().required("required"),
+  city_label: yup.string().required("required"),
 });
 const SearchForm = () => {
   const [query, setQuery] = useState("");
-//   const [listing, setListing] = useState("");
   const [city, setCity] = useState<SearchLocations[]>([initialSearchLocations]);
+  const [location, setLocation] = useState<SearchLocations>(initialSearchLocations)
   const [loading, setLoading] = useState(false);
-//   const controllerRef = useRef();
-console.log('what is the query', query)
-// if(query) {
-    const searchQuery = useDebouncer({value: query, time:2000});
-// }
+  console.log("what is the query", query);
+  const searchQuery = useDebouncer({ value: query, time: 2000 });
 
-const searchCharacter = async() => {
-    setCity([initialSearchLocations])
+  const searchCharacter = async () => {
+    setCity([initialSearchLocations]);
     setLoading(true);
-    const data = await getLocations(searchQuery).then((response) => response ? setCity(response) : setCity([initialSearchLocations]));
-    setLoading(false)
-}
+    const data = await getLocations(searchQuery).then((response) => {
+      response ? setCity(response) : setCity([initialSearchLocations]);
+  });
+    setLoading(false);
+  };
 
   const isNonMobile = useMediaQuery("(min-width:600px");
 
-  const handleFormSubmit = (values: any) => {
-    console.log("values", values);
+  const handleFormSubmit = async (values: any) => {
+    console.log("values", values, location);
+    const rentals =  await getRentalPrices(location);
   };
 
+  const handleChangeValue = async (event:any, city:SearchLocations) => {
+    console.log('what are the values', event, city)
+    console.log('what is the city right now', city)
+    setLocation(city);
+
+  }
+
   useEffect(() => {
-    if(searchQuery || query.trim().length < 0) searchCharacter();
-    
-  }, [searchQuery])
+    if (searchQuery || query.trim().length < 0) searchCharacter();
+  }, [searchQuery, location]);
 
   return (
     <Box m="20px">
       <Formik
-        initialValues={initialValues}
-        onSubmit={handleFormSubmit}
-        validationSchema={userSchema}
+        initialValues={initialSearchLocations}
+        onSubmit={(
+            values:SearchLocations,
+            { setSubmitting }: FormikHelpers<{city_label: string, city: string,state_code: string }>
+          ) => {
+            setTimeout(() => {
+                handleFormSubmit(values)
+            //   alert(JSON.stringify(values, null, 2));
+              setSubmitting(false);
+            }, 500);
+          }}
       >
         {({
           values,
@@ -83,31 +99,22 @@ const searchCharacter = async() => {
           handleChange,
           handleSubmit,
         }) => (
-          <form onSubmit={handleFormSubmit}>
+          <Form onSubmit={handleSubmit}>
             <Box
               display="grid"
               gap="30px"
               gridTemplateColumns="repeat(4, minmax(0, 1fr)"
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 4"}
+              }}
             >
-              <TextField
+              <Autocomplete
                 fullWidth
-                variant="filled"
-                type="text"
-                label="State"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.state}
-                name="state"
-                error={!!touched.state && !!errors.state}
-                sx={{ gridColumn: "span 2" }}
-              />
-                <Autocomplete
-                fullWidth
-    
                 disablePortal
                 id="combo-box-demo"
                 getOptionLabel={(option) => option.city_label}
                 options={city}
+                onChange={handleChangeValue}
                 renderOption={(props, option) => (
                   <Box component="li" {...props}>
                     {option.city_label}
@@ -115,13 +122,26 @@ const searchCharacter = async() => {
                 )}
                 sx={{ width: 300 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Enter City"  onChange={(event) => setQuery(event.target.value)} value={query} />
+                  <TextField
+                    {...params}
+                    label="Enter City"
+                    onChange={(event) => setQuery(event.target.value)}
+                    value={city}
+                  />
                 )}
               />
             </Box>
-          </form>
+            <Box display="flex" justifyContent="end" mt="20px">
+              <Button type="submit" color="secondary" variant="contained">
+                Search City
+              </Button>
+            </Box>
+          </Form>
         )}
       </Formik>
+        <Box>
+            <RentalProperty/>
+        </Box>
     </Box>
   );
 };
