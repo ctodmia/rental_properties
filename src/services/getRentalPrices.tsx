@@ -1,6 +1,7 @@
 import axios from "axios";
+import { useEffect } from "react";
 
-const getRentalPrices = async (location: SearchLocations) => {
+const getRentalPrices = (location: SearchLocations) => {
     const axios = require('axios');
 
     const { city, state_code } = location;
@@ -18,24 +19,28 @@ const getRentalPrices = async (location: SearchLocations) => {
       }
     };
 
-    try {
-      return await axios.request(options).then((response:any) => {
-        console.log("the response", response, response.data);
-        const { home_search } = response.data;
+    useEffect(() => {
+        try {
+          return axios.request(options).then((response:any) => {
+            console.log("the response", response, response.data);
+            const { home_search } = response.data;
+    
+            const cityData = home_search.results.map(
+              (cityData: { city: string; state_code: string }) =>({
+                city_label:`${cityData.city}, ${cityData.state_code}`,
+                city: cityData.city,
+                state_code: cityData.state_code
+    
+            }));
+            console.log("what do we get for city data", cityData);
+            return cityData;
+          });
+        } catch (error) {
+          console.error(error);
+        }
 
-        const cityData = home_search.results.map(
-          (cityData: { city: string; state_code: string }) =>({
-            city_label:`${cityData.city}, ${cityData.state_code}`,
-            city: cityData.city,
-            state_code: cityData.state_code
 
-        }));
-        console.log("what do we get for city data", cityData);
-        return cityData;
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    }, [])
   };
 
   export default getRentalPrices;
